@@ -14,10 +14,7 @@ import type { ChatMessage, CompletionRequest, CompletionResponse, ToolDefinition
  * @returns The full completion response, including any tool_calls on the first choice.
  * @throws If GITHUB_TOKEN is not set or if the API request fails.
  */
-export async function callWithTools(
-    messages: ChatMessage[],
-    tools?: ToolDefinition[]
-): Promise<CompletionResponse> {
+export async function callWithTools(messages: ChatMessage[], tools?: ToolDefinition[]): Promise<CompletionResponse> {
     const token = process.env.GITHUB_TOKEN;
     if (!token) {
         throw new Error('GITHUB_TOKEN is not set');

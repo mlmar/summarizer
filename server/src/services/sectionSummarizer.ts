@@ -13,16 +13,16 @@ const summarizeSectionTool: ToolDefinition = {
             properties: {
                 title: {
                     type: 'string',
-                    description: 'The section heading (e.g. "Abstract", "Methods")',
+                    description: 'The section heading (e.g. "Abstract", "Methods")'
                 },
                 content: {
                     type: 'string',
-                    description: 'The full text of the section',
-                },
+                    description: 'The full text of the section'
+                }
             },
-            required: ['title', 'content'],
-        },
-    },
+            required: ['title', 'content']
+        }
+    }
 };
 
 /**
@@ -38,12 +38,12 @@ async function summarizeSection(title: string, content: string): Promise<string>
         {
             role: 'system',
             content:
-                'You are a scientific writing assistant. Summarize the provided section of a scientific article in 2-4 concise sentences, preserving key findings and terminology.',
+                'You are a scientific writing assistant. Summarize the provided section of a scientific article in 2-4 concise sentences, preserving key findings and terminology.'
         },
         {
             role: 'user',
-            content: `Section: ${title}\n\n${content}`,
-        },
+            content: `Section: ${title}\n\n${content}`
+        }
     ];
 
     const response = await callWithTools(messages);
@@ -69,12 +69,12 @@ export async function summarizeArticle(text: string): Promise<SummarizeResponse>
         {
             role: 'system',
             content:
-                'You are a scientific document parser. Given the full text of a scientific article, identify each major section (Abstract, Introduction, Methods, Results, Discussion, Conclusion, etc.) and call the summarize_section tool once for each section with the section title and its corresponding text. Do not respond with any text — only make tool calls.',
+                'You are a scientific document parser. Given the full text of a scientific article, identify each major section (Abstract, Introduction, Methods, Results, Discussion, Conclusion, etc.) and call the summarize_section tool once for each section with the section title and its corresponding text. Do not respond with any text — only make tool calls.'
         },
         {
             role: 'user',
-            content: text,
-        },
+            content: text
+        }
     ];
 
     const sectionResponse = await callWithTools(messages, [summarizeSectionTool]);
@@ -85,7 +85,7 @@ export async function summarizeArticle(text: string): Promise<SummarizeResponse>
             const args = JSON.parse(call.function.arguments) as { title: string; content: string };
             const summary = await summarizeSection(args.title, args.content);
             return { title: args.title, summary };
-        }),
+        })
     );
 
     return { sections };

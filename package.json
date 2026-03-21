@@ -1,5 +1,14 @@
 {
-  "devDependencies": {
-    "@types/node": "^25.5.0"
-  }
+    "scripts": {
+        "dev:client": "npm run dev --prefix client",
+        "dev:server": "npm run dev --prefix server",
+        "format": "npm run format --prefix client && npm run format --prefix server"
+    },
+    "devDependencies": {
+        "@types/node": "^25.5.0",
+        "prettier": "^3.8.1"
+    },
+    "dependencies": {
+        "tailwind-merge": "^3.5.0"
+    }
 }
