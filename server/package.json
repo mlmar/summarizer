@@ -13,6 +13,7 @@
         "test": "node --experimental-vm-modules node_modules/.bin/jest --config jest.config.cjs"
     },
     "dependencies": {
+        "@summarizer/common": "file:../common",
         "@types/jest": "^30.0.0",
         "cors": "^2.8.6",
         "express": "^5.2.1",

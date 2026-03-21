@@ -1,5 +1,5 @@
 import { githubModelsConfig } from '../config/github.ts';
-import { post } from '../utils/http.ts';
+import { post } from '@summarizer/common';
 import type { ChatMessage, CompletionRequest, CompletionResponse, ToolDefinition } from '../types/github.ts';
 
 /**
