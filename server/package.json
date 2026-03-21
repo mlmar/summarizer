@@ -1,0 +1,24 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "description": "",
+    "license": "ISC",
+    "author": "",
+    "type": "module",
+    "main": "index.js",
+    "scripts": {
+        "start": "npm run dev",
+        "dev": "node --watch --env-file=.env src/index.ts",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "@types/jest": "^30.0.0",
+        "cors": "^2.8.6",
+        "express": "^5.2.1",
+        "jest": "^30.3.0"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6"
+    }
+}
