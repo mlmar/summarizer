@@ -99,10 +99,10 @@ async function summarizeSection(title: string, content: string): Promise<string>
  * Summarizes an entire scientific article section by section, yielding each
  * result as soon as it is ready.
  *
- * Stage 1 — section detection: the model is prompted to call the
+ * Stage 1 - section detection: the model is prompted to call the
  * `summarize_section` tool once per core section it identifies in each chunk.
  *
- * Stage 2 — per-section summarization: for every detected section, the content
+ * Stage 2 - per-section summarization: for every detected section, the content
  * is sent to the model and the resulting summary is yielded immediately.
  *
  * @param text - The full plain text of the scientific article.
@@ -114,16 +114,13 @@ export async function* streamArticleSections(text: string): AsyncGenerator<Summa
     const systemMessage: ChatMessage = {
         role: 'system',
         content:
-            'You are a scientific document parser. Given the full text of a scientific article, identify only the core sections (Abstract, Introduction, Methods/Materials and Methods, Results, Discussion, and Conclusion) and call the summarize_section tool once for each. Ignore acknowledgements, references, appendices, supplementary material, and author contributions. Do not respond with any text — only make tool calls.'
+            'You are a scientific document parser. Given the full text of a scientific article, identify only the core sections (Abstract, Introduction, Methods/Materials and Methods, Results, Discussion, and Conclusion) and call the summarize_section tool once for each. Ignore acknowledgements, references, appendices, supplementary material, and author contributions. Do not respond with any text - only make tool calls.'
     };
 
-    // Stage 1 — run section detection on each chunk sequentially
+    // Stage 1 - run section detection on each chunk sequentially
     const allToolCalls: ToolCall[] = [];
     for (const chunk of chunks) {
-        const response = await callWithTools(
-            [systemMessage, { role: 'user', content: chunk }],
-            [summarizeSectionTool]
-        );
+        const response = await callWithTools([systemMessage, { role: 'user', content: chunk }], [summarizeSectionTool]);
         allToolCalls.push(...(response.choices[0]?.message.tool_calls ?? []));
     }
 
@@ -140,7 +137,7 @@ export async function* streamArticleSections(text: string): AsyncGenerator<Summa
         }
     }
 
-    // Stage 2 — summarize each merged section sequentially, yielding as each completes
+    // Stage 2 - summarize each merged section sequentially, yielding as each completes
     for (const { title, content } of mergedSections.values()) {
         const capped = content.length > STAGE2_CONTENT_CAP ? content.slice(0, STAGE2_CONTENT_CAP) : content;
         const summary = await summarizeSection(title, capped);

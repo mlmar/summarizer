@@ -50,6 +50,6 @@ function logTokens(response: Response) {
     const limitTokens = headers.get('x-ratelimit-limit-tokens');
     console.log(
         `[GitHub Models] requests: ${remainingRequests}/${limitRequests} remaining` +
-        ` | tokens: ${remainingTokens}/${limitTokens} remaining`
+            ` | tokens: ${remainingTokens}/${limitTokens} remaining`
     );
 }
