@@ -44,8 +44,8 @@ function App() {
 
             {sections && sections.length > 0 && (
                 <section className='flex flex-col gap-4 w-full max-w-lg'>
-                    {sections.map((s, i) => (
-                        <Card key={i}>
+                    {sections.map((s) => (
+                        <Card key={s.title} className='animate-in fade-in slide-in-from-bottom-2 duration-500'>
                             <CardHeader>
                                 <CardTitle className='text-base'>{s.title}</CardTitle>
                             </CardHeader>
@@ -54,8 +54,8 @@ function App() {
                                     {s.summary
                                         .split('\n')
                                         .filter(Boolean)
-                                        .map((point, j) => (
-                                            <li key={j}>{point}</li>
+                                        .map((point) => (
+                                            <li key={point}>{point}</li>
                                         ))}
                                 </ul>
                             </CardContent>
