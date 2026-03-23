@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import './App.css';
-import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
-import { Alert, AlertTitle } from './components/ui/alert';
 import { Field, FieldLabel } from './components/ui/field';
 import { Spinner } from './components/ui/spinner';
 import { Dropzone } from './components/ui/dropzone';
@@ -13,52 +11,46 @@ function App() {
 
     return (
         <main className='flex flex-col items-center w-full min-h-screen p-8 gap-6'>
-            <Card className='w-full max-w-lg'>
-                <CardHeader>
-                    <CardTitle className='text-base'>Scientific Article Summarizer</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Field>
-                        <FieldLabel>Upload a PDF</FieldLabel>
-                        <Dropzone file={file} disabled={isFetching} accept='application/pdf' onFile={setFile} />
-                    </Field>
-                </CardContent>
-            </Card>
-
-            {error && (
-                <Alert variant='destructive' className='w-full max-w-lg'>
-                    <AlertTitle>
-                        An error occurred while summarizing this article. Try again in a few minutes.
-                    </AlertTitle>
-                </Alert>
-            )}
+            <section className='flex flex-col w-full max-w-lg gap-4'>
+                <h1 className='text-2xl text-primary font-bold '>Scientific Article Summarizer</h1>
+                <p className='text-sm text-muted-foreground'>
+                    Upload a scientific article PDF and get concise, section by section summaries. Key findings,
+                    methods, and conclusions are extracted automatically.
+                </p>
+                {error && (
+                    <p role='alert' className='font-semibold text-sm text-destructive animate-in fade-in duration-500'>
+                        An error occurred while summarizing this article. This service may be offline or rate-limited.
+                        Try again in a few minutes.
+                    </p>
+                )}
+                <Field>
+                    <FieldLabel>Upload a PDF</FieldLabel>
+                    <Dropzone file={file} disabled={isFetching} accept='application/pdf' onChange={setFile} />
+                </Field>
+            </section>
 
             {sections && sections.length > 0 && (
-                <section className='flex flex-col gap-4 w-full max-w-lg'>
+                <section className='flex flex-col gap-6 w-full max-w-lg'>
                     {sections.map((s) => (
-                        <Card key={s.title} className='animate-in fade-in slide-in-from-bottom-2 duration-500'>
-                            <CardHeader>
-                                <CardTitle className='text-base'>{s.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <ul className='list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2'>
-                                    {s.summary
-                                        .split('\n')
-                                        .filter(Boolean)
-                                        .map((point) => (
-                                            <li key={point}>{point}</li>
-                                        ))}
-                                </ul>
-                            </CardContent>
-                        </Card>
+                        <article key={s.title} className='flex flex-col animate-in fade-in duration-500 gap-2'>
+                            <h2 className='text-xl text-primary font-bold'>{s.title}</h2>
+                            <ul className='list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2'>
+                                {s.summary
+                                    .split('\n')
+                                    .filter(Boolean)
+                                    .map((point) => (
+                                        <li key={point}>{point}</li>
+                                    ))}
+                            </ul>
+                        </article>
                     ))}
                 </section>
             )}
 
             {isFetching && (
-                <div className='flex justify-center pt-4'>
+                <section className='flex justify-center pt-4'>
                     <Spinner className='size-8' />
-                </div>
+                </section>
             )}
         </main>
     );

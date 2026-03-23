@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 interface DropzoneProps {
     file: File | null;
     disabled?: boolean;
-    onFile: (file: File) => void;
+    onChange: (file: File) => void;
     accept?: string;
     placeholder?: string;
     dragLabel?: string;
@@ -17,7 +17,7 @@ interface DropzoneProps {
 export function Dropzone({
     file,
     disabled,
-    onFile,
+    onChange,
     accept,
     placeholder = 'Drop a file here or click to browse',
     dragLabel = 'Drop to upload'
@@ -31,7 +31,7 @@ export function Dropzone({
         setIsDragging(false);
         const dropped = e.dataTransfer.files[0];
         if (dropped && (!accept || accept.split(',').some((t) => dropped.type === t.trim()))) {
-            onFile(dropped);
+            onChange(dropped);
         }
     }
 
@@ -76,7 +76,7 @@ export function Dropzone({
                 disabled={disabled}
                 onChange={(e) => {
                     if (e.target.files?.length) {
-                        onFile(e.target.files[0]);
+                        onChange(e.target.files[0]);
                     }
                 }}
             />
