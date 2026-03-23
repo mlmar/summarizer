@@ -38,6 +38,13 @@ function App() {
                 )}
             </section>
 
+            {isFetching && (
+                <section className='flex flex-col gap-2 w-full max-w-xl'>
+                    <p className='text-sm text-muted-foreground'>Summarizing section {sectionCount + 1} of 6</p>
+                    <Progress value={(sectionCount / 6) * 100} />
+                </section>
+            )}
+
             {sections && sections.length > 0 && (
                 <section className='flex flex-col gap-6 w-full max-w-xl'>
                     {sections.map((s) => (
@@ -67,13 +74,6 @@ function App() {
                             </ul>
                         </article>
                     ))}
-                </section>
-            )}
-
-            {isFetching && (
-                <section className='flex flex-col gap-2 w-full max-w-xl'>
-                    <p className='text-sm text-muted-foreground'>Summarizing section {sectionCount + 1} of 6</p>
-                    <Progress value={(sectionCount / 6) * 100} />
                 </section>
             )}
         </main>
