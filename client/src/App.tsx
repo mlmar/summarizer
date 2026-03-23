@@ -3,11 +3,23 @@ import './App.css';
 import { Progress } from './components/ui/progress';
 import { Dropzone } from './components/ui/dropzone';
 import { useSummarize } from './hooks/useSummarize';
+import { Button } from './components/ui/button';
+import { Clipboard, Check } from 'lucide-react';
 
 function App() {
     const [file, setFile] = useState<File | null>(null);
     const { data: sections, isFetching, error } = useSummarize(file);
     const sectionCount = sections?.length ?? 0;
+    const [copiedTitle, setCopiedTitle] = useState<string | null>(null);
+
+    function copyToClipboard(title: string, summary: string) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(summary).then(() => {
+                setCopiedTitle(title);
+                setTimeout(() => setCopiedTitle(null), 2000);
+            });
+        }
+    }
 
     return (
         <main className='flex flex-col items-center w-full min-h-screen p-8 gap-6'>
@@ -30,7 +42,21 @@ function App() {
                 <section className='flex flex-col gap-6 w-full max-w-xl'>
                     {sections.map((s) => (
                         <article key={s.title} className='flex flex-col animate-in fade-in duration-500 gap-2'>
-                            <h2 className='text-xl text-primary font-bold'>{s.title}</h2>
+                            <span className='flex items-center gap-2'>
+                                <h2 className='text-xl text-primary font-bold'>{s.title}</h2>
+                                <Button
+                                    variant='ghost'
+                                    size='icon-sm'
+                                    aria-label={`Copy ${s.title} summary to clipboard`}
+                                    onClick={() => copyToClipboard(s.title, s.summary)}
+                                >
+                                    {copiedTitle === s.title ? (
+                                        <Check className='text-green-500 animate-in fade-in duration-500' />
+                                    ) : (
+                                        <Clipboard />
+                                    )}
+                                </Button>
+                            </span>
                             <ul className='list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2'>
                                 {s.summary
                                     .split('\n')
