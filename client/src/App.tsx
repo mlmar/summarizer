@@ -30,9 +30,9 @@ function App() {
 
             {isFetching && (
                 <section className='flex flex-col gap-2 w-full max-w-xl'>
-                    <p className='text-sm text-muted-foreground'>
-                        Summarizing section {sectionCount + 1} of 6 <Spinner />{' '}
-                    </p>
+                    <h2 className='flex items-center text-sm text-muted-foreground gap-2'>
+                        Summarizing section {sectionCount + 1} of 6 <Spinner />
+                    </h2>
                     <Progress value={(sectionCount / 6) * 100} />
                 </section>
             )}
