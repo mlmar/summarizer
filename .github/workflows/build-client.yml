@@ -21,11 +21,11 @@ jobs:
             - run: npm ci
 
             - run: npm run build:client
+              env:
+                  VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
 
             - name: Publish build to branch
               uses: peaceiris/actions-gh-pages@v4
-              env:
-                  VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   publish_dir: client/dist
