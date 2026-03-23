@@ -25,7 +25,8 @@ export async function callWithTools(messages: ChatMessage[], tools?: ToolDefinit
         ...(tools && tools.length > 0 && { tools, tool_choice: 'auto' })
     };
 
-    const response = await fetch(`${githubModelsConfig.endpoint}/chat/completions`, {
+    const url = `${githubModelsConfig.endpoint}/chat/completions`;
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -35,7 +36,7 @@ export async function callWithTools(messages: ChatMessage[], tools?: ToolDefinit
     });
 
     if (!response.ok) {
-        throw new Error(`POST /chat/completions failed with status ${response.status}: ${response.statusText}`);
+        throw new Error(`POST ${url} failed with status ${response.status}: ${response.statusText}`);
     }
 
     logTokens(response);
@@ -50,6 +51,6 @@ function logTokens(response: Response) {
     const limitTokens = headers.get('x-ratelimit-limit-tokens');
     console.log(
         `[GitHub Models] requests: ${remainingRequests}/${limitRequests} remaining` +
-            ` | tokens: ${remainingTokens}/${limitTokens} remaining`
+        ` | tokens: ${remainingTokens}/${limitTokens} remaining`
     );
 }
