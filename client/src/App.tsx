@@ -12,7 +12,7 @@ function App() {
 
     return (
         <main className='flex flex-col items-center w-full min-h-screen p-8 gap-6'>
-            <section className='flex flex-col w-full max-w-lg gap-4'>
+            <section className='flex flex-col w-full max-w-xl gap-4'>
                 <h1 className='text-2xl font-bold '>Scientific Article Summarizer</h1>
                 <p className='text-sm text-muted-foreground'>
                     Upload a PDF and get concise, section by section summaries. Key findings, methods, and conclusions
@@ -32,7 +32,7 @@ function App() {
             </section>
 
             {sections && sections.length > 0 && (
-                <section className='flex flex-col gap-6 w-full max-w-lg'>
+                <section className='flex flex-col gap-6 w-full max-w-xl'>
                     {sections.map((s) => (
                         <article key={s.title} className='flex flex-col animate-in fade-in duration-500 gap-2'>
                             <h2 className='text-xl text-primary font-bold'>{s.title}</h2>
@@ -50,7 +50,7 @@ function App() {
             )}
 
             {isFetching && (
-                <section className='flex flex-col gap-2 w-full max-w-lg'>
+                <section className='flex flex-col gap-2 w-full max-w-xl'>
                     <p className='text-sm text-muted-foreground'>Summarizing section {sectionCount + 1} of 6</p>
                     <Progress value={(sectionCount / 6) * 100} />
                 </section>
