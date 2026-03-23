@@ -9,6 +9,7 @@
     "scripts": {
         "start": "npm run dev",
         "dev": "node --watch --env-file=.env src/index.ts",
+        "build": "tsc --project tsconfig.json",
         "format": "prettier --write \"src/**/*.ts\"",
         "test": "node --experimental-vm-modules node_modules/.bin/jest --config jest.config.cjs"
     },
