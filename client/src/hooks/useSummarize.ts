@@ -14,6 +14,7 @@ export function useSummarize(file: File | null) {
                 return postFormStream<SectionSummary>(SUMMARIZE_URL, formData, undefined, signal);
             }
         }),
+        retry: false,
         enabled: !!file
     });
 }
