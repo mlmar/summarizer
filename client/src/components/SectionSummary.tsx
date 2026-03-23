@@ -12,7 +12,8 @@ export function SectionSummary({ title, summary }: SectionSummaryProps) {
 
     function copyToClipboard() {
         if (navigator.clipboard) {
-            navigator.clipboard.writeText(summary).then(() => {
+            const text = title + '\n' + summary;
+            navigator.clipboard.writeText(text).then(() => {
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
             });
