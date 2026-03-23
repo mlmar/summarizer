@@ -1,30 +1,29 @@
-name: Build Client
+name: Build Server
 
 on:
     push:
         branches: [main]
 
+permissions:
+    contents: write
+
 jobs:
-    build:
+    build-and-deploy:
         runs-on: ubuntu-latest
-        permissions:
-            contents: write
         steps:
             - uses: actions/checkout@v4
 
             - uses: actions/setup-node@v4
               with:
-                  node-version: 20
-                  cache: npm
+                  node-version: '20'
+                  cache: 'npm'
 
-            - run: npm ci
-
-            - run: npm run build:server
+            - run: |
+                  npm install
+                  npm run build:server
 
             - name: Publish build to branch
-              uses: peaceiris/actions-gh-pages@v4
+              uses: JamesIves/github-pages-deploy-action@v4
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: server/dist
-                  publish_branch: build-server
-                  force_orphan: true
+                  folder: server/dist
+                  branch: build-out
