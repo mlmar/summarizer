@@ -1,4 +1,5 @@
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { TextItem } from 'pdfjs-dist/types/src/display/api.js';
 
 /**
  * Extracts all plain text from a PDF file buffer.
@@ -20,7 +21,7 @@ export async function extractText(buffer: Buffer): Promise<string> {
     for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
-        const pageText = content.items.map((item) => ('str' in item ? item.str : '')).join(' ');
+        const pageText = content.items.map((item) => ((item as TextItem)?.str ?? '')).join(' ');
         pageTexts.push(pageText.trim());
     }
 

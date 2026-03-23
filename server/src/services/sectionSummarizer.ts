@@ -128,8 +128,11 @@ export async function* streamArticleSections(text: string): AsyncGenerator<Summa
     for (const call of allToolCalls) {
         const args = JSON.parse(call.function.arguments) as { title: string; content: string };
         const key = args.title.toLowerCase();
-        if (!CORE_SECTIONS.has(key)) continue;
-        const existing = mergedSections.get(key);
+        if (!CORE_SECTIONS.has(key)) { // Skip non essential sections
+            continue;
+        }
+
+        const existing = mergedSections.get(key); // Merge existing sections together
         if (existing) {
             existing.content += '\n\n' + args.content;
         } else {
@@ -139,7 +142,7 @@ export async function* streamArticleSections(text: string): AsyncGenerator<Summa
 
     // Stage 2 - summarize each merged section sequentially, yielding as each completes
     for (const { title, content } of mergedSections.values()) {
-        const capped = content.length > STAGE2_CONTENT_CAP ? content.slice(0, STAGE2_CONTENT_CAP) : content;
+        const capped = content.slice(0, STAGE2_CONTENT_CAP);
         const summary = await summarizeSection(title, capped);
         yield { title, summary };
     }
