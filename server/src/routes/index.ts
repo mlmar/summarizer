@@ -6,6 +6,7 @@ import { summarizeRouter } from './summarize.ts';
  *
  * Routes registered:
  * - `POST /summarize` - PDF upload and section summarization.
+ * - `GET /ping` - pong
  *
  * @param app - The Express application instance.
  */

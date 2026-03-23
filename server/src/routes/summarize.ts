@@ -8,6 +8,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 export const summarizeRouter = Router();
 
+/**
+ *  Stream responses back to client
+ */
 summarizeRouter.post('/', upload.single('file'), validatePdfUpload, async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
