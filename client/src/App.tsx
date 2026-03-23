@@ -2,9 +2,9 @@ import { useState } from 'react';
 import './App.css';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import { Alert, AlertTitle } from './components/ui/alert';
-import { Input } from './components/ui/input';
 import { Field, FieldLabel } from './components/ui/field';
 import { Spinner } from './components/ui/spinner';
+import { Dropzone } from './components/ui/dropzone';
 import { useSummarize } from './hooks/useSummarize';
 
 function App() {
@@ -19,17 +19,8 @@ function App() {
                 </CardHeader>
                 <CardContent>
                     <Field>
-                        <FieldLabel> Upload a PDF </FieldLabel>
-                        <Input
-                            type='file'
-                            accept='application/pdf'
-                            disabled={isFetching}
-                            onChange={(e) => {
-                                if (e.target.files?.length) {
-                                    setFile(e.target.files[0]);
-                                }
-                            }}
-                        />
+                        <FieldLabel>Upload a PDF</FieldLabel>
+                        <Dropzone file={file} disabled={isFetching} accept='application/pdf' onFile={setFile} />
                     </Field>
                 </CardContent>
             </Card>
