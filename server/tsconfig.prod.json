@@ -6,7 +6,8 @@
         "esModuleInterop": true,
         "strict": true,
         "skipLibCheck": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "rewriteRelativeImportExtensions": true
     },
     "include": ["src/**/*"]
 }
