@@ -1,0 +1,14 @@
+FROM node:24
+
+WORKDIR /app
+
+COPY common/. common/
+
+COPY server/package.json server/
+RUN npm install --prefix server
+
+COPY server/. server/
+RUN npm run build --prefix server
+
+EXPOSE 3300 5678
+CMD ["npm", "run", "prod", "--prefix", "server"]

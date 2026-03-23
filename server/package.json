@@ -10,6 +10,7 @@
         "start": "npm run dev",
         "dev": "node --watch --env-file=.env src/index.ts",
         "build": "tsc --project tsconfig.prod.json",
+        "prod": "node --env-file=.env dist/server/src/index.js",
         "format": "prettier --write \"src/**/*.ts\"",
         "test": "node --experimental-vm-modules node_modules/.bin/jest --config jest.config.cjs"
     },
