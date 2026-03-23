@@ -13,7 +13,7 @@ function App() {
     return (
         <main className='flex flex-col items-center w-full min-h-screen p-8 gap-6'>
             <section className='flex flex-col w-full max-w-lg gap-4'>
-                <h1 className='text-2xl text-primary font-bold '>Scientific Article Summarizer</h1>
+                <h1 className='text-2xl font-bold '>Scientific Article Summarizer</h1>
                 <p className='text-sm text-muted-foreground'>
                     Upload a scientific article PDF and get concise, section by section summaries. Key findings,
                     methods, and conclusions are extracted automatically.

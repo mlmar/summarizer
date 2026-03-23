@@ -57,10 +57,10 @@ export function Dropzone({
                     'flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-8 text-center transition-colors cursor-pointer select-none',
                     {
                         'pointer-events-none opacity-50': disabled,
-                        'hover:border-ring hover:bg-accent/40': !disabled
+                        'hover:border-ring hover:border-primary hover:bg-accent/40': !disabled
                     },
                     {
-                        'border-ring bg-accent/60': isDragging,
+                        'border-ring border-primary bg-accent/60': isDragging,
                         'border-input': !isDragging
                     }
                 )}
