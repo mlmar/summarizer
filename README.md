@@ -12,6 +12,8 @@ Frontend
 - Vite + React + TypeScript
 - ShadCN
 - TanStack Query
+- GitHub Pages
+- GitHub Actions
 
 Backend
 
@@ -19,9 +21,6 @@ Backend
 - multer
 - pdfjs
 - Github Models API
-
-Hosting
-
 - Google Cloud Run
 - Docker
   `DockerFile.server`
@@ -55,6 +54,8 @@ GITHUB_MODEL=<YOUR_CHOICE_OF_MODEL>
 ```
 
 ## Docker
+
+Server Image
 
 ```bash
 docker build -t summarizer . -f Dockerfile.server
