@@ -15,6 +15,7 @@ export function useSummarize(file: File | null) {
             }
         }),
         retry: false,
+        refetchOnWindowFocus: false,
         enabled: !!file
     });
 }

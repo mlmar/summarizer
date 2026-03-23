@@ -10,7 +10,7 @@ export const summarizeRouter = Router();
 
 summarizeRouter.post('/', upload.single('file'), validatePdfUpload, async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.setHeader('Connection', 'keep-alive');
 
     const text = await extractText(req.file!.buffer);
