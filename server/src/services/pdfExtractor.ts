@@ -1,5 +1,5 @@
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
-import { TextItem } from 'pdfjs-dist/types/src/display/api.js';
+import type { TextItem } from 'pdfjs-dist/types/src/display/api.js';
 
 /**
  * Extracts all plain text from a PDF file buffer.

@@ -4,6 +4,7 @@ import { Progress } from './components/ui/progress';
 import { Dropzone } from './components/ui/dropzone';
 import { useSummarize } from './hooks/useSummarize';
 import { SectionSummary } from './components/SectionSummary';
+import { Spinner } from '@/components/ui/spinner';
 
 function App() {
     const [file, setFile] = useState<File | null>(null);
@@ -29,7 +30,9 @@ function App() {
 
             {isFetching && (
                 <section className='flex flex-col gap-2 w-full max-w-xl'>
-                    <p className='text-sm text-muted-foreground'>Summarizing section {sectionCount + 1} of 6</p>
+                    <p className='text-sm text-muted-foreground'>
+                        Summarizing section {sectionCount + 1} of 6 <Spinner />{' '}
+                    </p>
                     <Progress value={(sectionCount / 6) * 100} />
                 </section>
             )}
