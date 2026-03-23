@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import { Field, FieldLabel } from './components/ui/field';
-import { Spinner } from './components/ui/spinner';
+import { Progress } from './components/ui/progress';
 import { Dropzone } from './components/ui/dropzone';
 import { useSummarize } from './hooks/useSummarize';
 
@@ -48,8 +48,11 @@ function App() {
             )}
 
             {isFetching && (
-                <section className='flex justify-center pt-4'>
-                    <Spinner className='size-8' />
+                <section className='flex flex-col gap-2 w-full max-w-lg'>
+                    <p className='text-sm text-muted-foreground'>
+                        Summarizing section {(sections?.length ?? 0) + 1} of 6...
+                    </p>
+                    <Progress value={((sections?.length ?? 0) / 6) * 100} />
                 </section>
             )}
         </main>
