@@ -11,4 +11,8 @@ import { summarizeRouter } from './summarize.ts';
  */
 export function registerRoutes(app: Application): void {
     app.use('/summarize', summarizeRouter);
+
+    app.get('/ping', (req, res) => {
+        res.json('pong');
+    });
 }

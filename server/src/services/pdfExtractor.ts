@@ -21,7 +21,7 @@ export async function extractText(buffer: Buffer): Promise<string> {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
         const pageText = content.items.map((item) => ('str' in item ? item.str : '')).join(' ');
-        pageTexts.push(pageText);
+        pageTexts.push(pageText.trim());
     }
 
     return pageTexts.join('\n');

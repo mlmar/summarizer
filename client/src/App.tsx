@@ -1,85 +1,72 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import './App.css';
-import { postForm } from '@summarizer/common/http.ts';
-import type { SummarizeResponse } from '@summarizer/common/index.ts';
-import { Button } from './components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from './components/ui/alert';
+import { Alert, AlertTitle } from './components/ui/alert';
 import { Input } from './components/ui/input';
-import { Field, FieldDescription, FieldLabel } from './components/ui/field';
-
-const SUMMARIZE_URL = 'http://localhost:3300/summarize';
+import { Field, FieldLabel } from './components/ui/field';
+import { Spinner } from './components/ui/spinner';
+import { useSummarize } from './hooks/useSummarize';
 
 function App() {
     const [file, setFile] = useState<File | null>(null);
-    const [result, setResult] = useState<SummarizeResponse | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
-
-    async function handleSubmit(e: FormEvent) {
-        e.preventDefault();
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        setLoading(true);
-        setError(null);
-        setResult(null);
-
-        try {
-            const data = await postForm<SummarizeResponse>(SUMMARIZE_URL, formData);
-            setResult(data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Unknown error');
-        } finally {
-            setLoading(false);
-        }
-    }
+    const { data: sections, isFetching, error } = useSummarize(file);
 
     return (
         <main className='flex flex-col items-center w-full min-h-screen p-8 gap-6'>
             <Card className='w-full max-w-lg'>
                 <CardHeader>
-                    <CardTitle>PDF Summarizer</CardTitle>
+                    <CardTitle className='text-base'>Scientific Article Summarizer</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-                        <Field>
-                            <FieldLabel htmlFor='input-demo-api-key'>Upload a file </FieldLabel>
-                            <Input
-                                type='file'
-                                accept='application/pdf'
-                                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                            />
-                            <FieldDescription>Upload an Article</FieldDescription>
-                        </Field>
-                        <Button type='submit' disabled={!file || loading}>
-                            {loading ? 'Summarizing…' : 'Summarize'}
-                        </Button>
-                    </form>
+                    <Field>
+                        <FieldLabel> Upload a PDF </FieldLabel>
+                        <Input
+                            type='file'
+                            accept='application/pdf'
+                            disabled={isFetching}
+                            onChange={(e) => {
+                                if (e.target.files?.length) {
+                                    setFile(e.target.files[0]);
+                                }
+                            }}
+                        />
+                    </Field>
                 </CardContent>
             </Card>
 
             {error && (
                 <Alert variant='destructive' className='w-full max-w-lg'>
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
+                    <AlertTitle>
+                        An error occurred while summarizing this article. Try again in a few minutes.
+                    </AlertTitle>
                 </Alert>
             )}
 
-            {result && (
-                <div className='flex flex-col gap-4 w-full max-w-lg'>
-                    {result.sections.map((s, i) => (
+            {sections && sections.length > 0 && (
+                <section className='flex flex-col gap-4 w-full max-w-lg'>
+                    {sections.map((s, i) => (
                         <Card key={i}>
                             <CardHeader>
                                 <CardTitle className='text-base'>{s.title}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className='text-sm text-muted-foreground'>{s.summary}</p>
+                                <ul className='list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2'>
+                                    {s.summary
+                                        .split('\n')
+                                        .filter(Boolean)
+                                        .map((point, j) => (
+                                            <li key={j}>{point}</li>
+                                        ))}
+                                </ul>
                             </CardContent>
                         </Card>
                     ))}
+                </section>
+            )}
+
+            {isFetching && (
+                <div className='flex justify-center pt-4'>
+                    <Spinner className='size-8' />
                 </div>
             )}
         </main>

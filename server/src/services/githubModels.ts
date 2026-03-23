@@ -1,5 +1,4 @@
 import { githubModelsConfig } from '../config/github.ts';
-import { post } from '@summarizer/common';
 import type { ChatMessage, CompletionRequest, CompletionResponse, ToolDefinition } from '../types/github.ts';
 
 /**
@@ -23,11 +22,34 @@ export async function callWithTools(messages: ChatMessage[], tools?: ToolDefinit
     const body: CompletionRequest = {
         model: githubModelsConfig.model,
         messages,
-        max_tokens: githubModelsConfig.maxTokens,
         ...(tools && tools.length > 0 && { tools, tool_choice: 'auto' })
     };
 
-    return post<CompletionResponse>(`${githubModelsConfig.endpoint}/chat/completions`, body, {
-        Authorization: `Bearer ${token}`
+    const response = await fetch(`${githubModelsConfig.endpoint}/chat/completions`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
     });
+
+    if (!response.ok) {
+        throw new Error(`POST /chat/completions failed with status ${response.status}: ${response.statusText}`);
+    }
+
+    logTokens(response);
+    return response.json() as Promise<CompletionResponse>;
+}
+
+function logTokens(response: Response) {
+    const headers = response.headers;
+    const remainingRequests = headers.get('x-ratelimit-remaining-requests');
+    const limitRequests = headers.get('x-ratelimit-limit-requests');
+    const remainingTokens = headers.get('x-ratelimit-remaining-tokens');
+    const limitTokens = headers.get('x-ratelimit-limit-tokens');
+    console.log(
+        `[GitHub Models] requests: ${remainingRequests}/${limitRequests} remaining` +
+        ` | tokens: ${remainingTokens}/${limitTokens} remaining`
+    );
 }

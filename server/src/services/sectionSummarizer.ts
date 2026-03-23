@@ -2,6 +2,51 @@ import { callWithTools } from './githubModels.ts';
 import type { ChatMessage, ToolDefinition, ToolCall } from '../types/github.ts';
 import type { SummarizeResponse } from '../types/api.ts';
 
+const STAGE1_CHUNK_SIZE = 24_000;
+const STAGE2_CONTENT_CAP = 20_000;
+
+const CORE_SECTIONS = new Set([
+    'abstract',
+    'introduction',
+    'methods',
+    'materials and methods',
+    'results',
+    'discussion',
+    'conclusion',
+    'conclusions'
+]);
+
+/**
+ * Splits text into chunks of at most maxSize characters, preferring to break
+ * at paragraph boundaries (\n\n) to avoid splitting mid-sentence.
+ */
+function chunkText(text: string, maxSize: number): string[] {
+    const chunks: string[] = [];
+    const paragraphs = text.split(/\n\n+/);
+    let current = '';
+
+    for (const para of paragraphs) {
+        const separator = current ? '\n\n' : '';
+        if (current.length + separator.length + para.length > maxSize) {
+            if (current) chunks.push(current);
+            // If a single paragraph exceeds maxSize, hard-split it
+            if (para.length > maxSize) {
+                for (let i = 0; i < para.length; i += maxSize) {
+                    chunks.push(para.slice(i, i + maxSize));
+                }
+                current = '';
+            } else {
+                current = para;
+            }
+        } else {
+            current = current + separator + para;
+        }
+    }
+
+    if (current) chunks.push(current);
+    return chunks;
+}
+
 const summarizeSectionTool: ToolDefinition = {
     type: 'function',
     function: {
@@ -38,7 +83,7 @@ async function summarizeSection(title: string, content: string): Promise<string>
         {
             role: 'system',
             content:
-                'You are a scientific writing assistant. Summarize the provided section of a scientific article in 2-4 concise sentences, preserving key findings and terminology.'
+                'You are a scientific writing assistant. Summarize the provided section of a scientific article as 3-5 concise bullet points, preserving key findings and terminology. Return only the bullet points, one per line, with no bullet characters or prefixes.'
         },
         {
             role: 'user',
@@ -51,42 +96,54 @@ async function summarizeSection(title: string, content: string): Promise<string>
 }
 
 /**
- * Summarizes an entire scientific article by using GitHub Models tool calling
- * to identify sections, then summarizing each section individually.
+ * Summarizes an entire scientific article section by section, yielding each
+ * result as soon as it is ready.
  *
  * Stage 1 — section detection: the model is prompted to call the
- * `summarize_section` tool once per section it identifies in the article text.
+ * `summarize_section` tool once per core section it identifies in each chunk.
  *
- * Stage 2 — per-section summarization: for every tool_call returned, the
- * section content is sent to the model with a focused summarization prompt and
- * the resulting summary is collected.
+ * Stage 2 — per-section summarization: for every detected section, the content
+ * is sent to the model and the resulting summary is yielded immediately.
  *
  * @param text - The full plain text of the scientific article.
- * @returns An object containing an array of section titles and their summaries.
+ * @yields Each section title and its summary as soon as it is available.
  */
-export async function summarizeArticle(text: string): Promise<SummarizeResponse> {
-    const messages: ChatMessage[] = [
-        {
-            role: 'system',
-            content:
-                'You are a scientific document parser. Given the full text of a scientific article, identify each major section (Abstract, Introduction, Methods, Results, Discussion, Conclusion, etc.) and call the summarize_section tool once for each section with the section title and its corresponding text. Do not respond with any text — only make tool calls.'
-        },
-        {
-            role: 'user',
-            content: text
+export async function* streamArticleSections(text: string): AsyncGenerator<SummarizeResponse['sections'][number]> {
+    const chunks = chunkText(text, STAGE1_CHUNK_SIZE);
+
+    const systemMessage: ChatMessage = {
+        role: 'system',
+        content:
+            'You are a scientific document parser. Given the full text of a scientific article, identify only the core sections (Abstract, Introduction, Methods/Materials and Methods, Results, Discussion, and Conclusion) and call the summarize_section tool once for each. Ignore acknowledgements, references, appendices, supplementary material, and author contributions. Do not respond with any text — only make tool calls.'
+    };
+
+    // Stage 1 — run section detection on each chunk sequentially
+    const allToolCalls: ToolCall[] = [];
+    for (const chunk of chunks) {
+        const response = await callWithTools(
+            [systemMessage, { role: 'user', content: chunk }],
+            [summarizeSectionTool]
+        );
+        allToolCalls.push(...(response.choices[0]?.message.tool_calls ?? []));
+    }
+
+    const mergedSections = new Map<string, { title: string; content: string }>();
+    for (const call of allToolCalls) {
+        const args = JSON.parse(call.function.arguments) as { title: string; content: string };
+        const key = args.title.toLowerCase();
+        if (!CORE_SECTIONS.has(key)) continue;
+        const existing = mergedSections.get(key);
+        if (existing) {
+            existing.content += '\n\n' + args.content;
+        } else {
+            mergedSections.set(key, { title: args.title, content: args.content });
         }
-    ];
+    }
 
-    const sectionResponse = await callWithTools(messages, [summarizeSectionTool]);
-    const toolCalls: ToolCall[] = sectionResponse.choices[0]?.message.tool_calls ?? [];
-
-    const sections = await Promise.all(
-        toolCalls.map(async (call) => {
-            const args = JSON.parse(call.function.arguments) as { title: string; content: string };
-            const summary = await summarizeSection(args.title, args.content);
-            return { title: args.title, summary };
-        })
-    );
-
-    return { sections };
+    // Stage 2 — summarize each merged section sequentially, yielding as each completes
+    for (const { title, content } of mergedSections.values()) {
+        const capped = content.length > STAGE2_CONTENT_CAP ? content.slice(0, STAGE2_CONTENT_CAP) : content;
+        const summary = await summarizeSection(title, capped);
+        yield { title, summary };
+    }
 }
