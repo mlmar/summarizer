@@ -1,5 +1,7 @@
 # Scientific Article Summarizer
 
+<img alt="image" src="readme/summarizer.png" />
+
 1. Upload a PDF
 2. Read summaries for key section (Abstract, Introduction, Methods, etc.)
 
