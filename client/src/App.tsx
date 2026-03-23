@@ -15,19 +15,20 @@ function App() {
             <section className='flex flex-col w-full max-w-lg gap-4'>
                 <h1 className='text-2xl font-bold '>Scientific Article Summarizer</h1>
                 <p className='text-sm text-muted-foreground'>
-                    Upload a scientific article PDF and get concise, section by section summaries. Key findings,
-                    methods, and conclusions are extracted automatically.
+                    Upload a PDF and get concise, section by section summaries. Key findings, methods, and conclusions
+                    are extracted automatically.
                 </p>
+
+                <Field>
+                    <FieldLabel>Upload a PDF</FieldLabel>
+                    <Dropzone file={file} disabled={isFetching} accept='application/pdf' onChange={setFile} />
+                </Field>
                 {error && (
                     <p role='alert' className='font-semibold text-sm text-destructive animate-in fade-in duration-500'>
                         An error occurred while summarizing this article. This service may be offline or rate-limited.
                         Try again in a few minutes.
                     </p>
                 )}
-                <Field>
-                    <FieldLabel>Upload a PDF</FieldLabel>
-                    <Dropzone file={file} disabled={isFetching} accept='application/pdf' onChange={setFile} />
-                </Field>
             </section>
 
             {sections && sections.length > 0 && (

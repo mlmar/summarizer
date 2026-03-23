@@ -57,16 +57,25 @@ export function Dropzone({
                     'flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-8 text-center transition-colors cursor-pointer select-none',
                     {
                         'pointer-events-none opacity-50': disabled,
-                        'hover:border-ring hover:border-primary hover:bg-accent/40': !disabled
-                    },
-                    {
+                        'hover:border-ring hover:border-primary hover:bg-accent/40': !disabled,
                         'border-ring border-primary bg-accent/60': isDragging,
-                        'border-input': !isDragging
+                        'border-input': !isDragging,
+                        'border-primary': file
                     }
                 )}
             >
-                <UploadCloud className='size-8 text-muted-foreground' />
-                <span className='text-sm text-muted-foreground'>{file ? file.name : label}</span>
+                <UploadCloud
+                    className={cn('size-8 text-muted-foreground', {
+                        'text-primary': file
+                    })}
+                />
+                <span
+                    className={cn('text-sm text-muted-foreground', {
+                        'text-primary': file
+                    })}
+                >
+                    {file ? file.name : label}
+                </span>
             </div>
             <input
                 ref={inputRef}
