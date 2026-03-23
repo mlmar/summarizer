@@ -14,6 +14,7 @@
         "test": "node --experimental-vm-modules node_modules/.bin/jest --config jest.config.cjs"
     },
     "dependencies": {
+        "@napi-rs/canvas": "^0.1.97",
         "@summarizer/common": "file:../common",
         "@types/jest": "^30.0.0",
         "cors": "^2.8.6",
