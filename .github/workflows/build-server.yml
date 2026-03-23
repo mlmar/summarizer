@@ -26,4 +26,4 @@ jobs:
               uses: JamesIves/github-pages-deploy-action@v4
               with:
                   folder: server/dist
-                  branch: build-out
+                  branch: build-server
