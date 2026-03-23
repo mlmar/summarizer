@@ -12,7 +12,7 @@ function App() {
     const sectionCount = sections?.length ?? 0;
 
     return (
-        <main className='flex flex-col items-center w-full min-h-screen p-8 gap-6'>
+        <main className='flex flex-col items-center w-full min-h-screen p-4 gap-6'>
             <section className='flex flex-col w-full max-w-xl gap-4'>
                 <h1 className='text-2xl font-bold '>Scientific Article Summarizer</h1>
                 <p className='text-sm text-muted-foreground'>

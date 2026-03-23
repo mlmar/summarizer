@@ -9,6 +9,7 @@ body {
     overflow-y: auto;
     background-color: var(--bg-dark);
     color: var(--fg-dark);
+    font-size: 18px;
 }
 
 #root {
