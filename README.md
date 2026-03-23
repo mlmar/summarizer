@@ -20,6 +20,12 @@ Backend
 - pdfjs
 - Github Models API
 
+Hosting
+
+- Google Cloud Run
+- Docker
+  `DockerFile.server`
+
 ## Installation
 
 ```bash
@@ -46,4 +52,10 @@ CORS_ORIGIN=*
 
 GITHUB_TOKEN=<YOUR_TOKEN>
 GITHUB_MODEL=<YOUR_CHOICE_OF_MODEL>
+```
+
+## Docker
+
+```bash
+docker build -t summarizer . -f Dockerfile.server
 ```
