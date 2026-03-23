@@ -2,7 +2,7 @@ import { useQuery, experimental_streamedQuery, type QueryFunctionContext } from 
 import { postFormStream } from '@summarizer/common/http.ts';
 import type { SectionSummary } from '@summarizer/common';
 
-const SUMMARIZE_URL = 'http://localhost:3300/summarize';
+const SUMMARIZE_URL = import.meta.env.VITE_SERVER_URL + '/summarize';
 
 export function useSummarize(file: File | null) {
     return useQuery({
