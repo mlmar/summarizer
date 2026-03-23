@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import './App.css';
-import { Field, FieldLabel } from './components/ui/field';
 import { Progress } from './components/ui/progress';
 import { Dropzone } from './components/ui/dropzone';
 import { useSummarize } from './hooks/useSummarize';
@@ -18,11 +17,7 @@ function App() {
                     Upload a PDF and get concise, section by section summaries. Key findings, methods, and conclusions
                     are extracted automatically.
                 </p>
-
-                <Field>
-                    <FieldLabel>Upload a PDF</FieldLabel>
-                    <Dropzone file={file} disabled={isFetching} accept='application/pdf' onChange={setFile} />
-                </Field>
+                <Dropzone file={file} disabled={isFetching} accept='application/pdf' onChange={setFile} />
                 {error && (
                     <p role='alert' className='font-semibold text-sm text-destructive animate-in fade-in duration-500'>
                         An error occurred while summarizing this article. This service may be offline or rate-limited.
