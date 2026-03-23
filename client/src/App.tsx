@@ -8,6 +8,7 @@ import { useSummarize } from './hooks/useSummarize';
 function App() {
     const [file, setFile] = useState<File | null>(null);
     const { data: sections, isFetching, error } = useSummarize(file);
+    const sectionCount = sections?.length ?? 0;
 
     return (
         <main className='flex flex-col items-center w-full min-h-screen p-8 gap-6'>
@@ -49,10 +50,8 @@ function App() {
 
             {isFetching && (
                 <section className='flex flex-col gap-2 w-full max-w-lg'>
-                    <p className='text-sm text-muted-foreground'>
-                        Summarizing section {(sections?.length ?? 0) + 1} of 6...
-                    </p>
-                    <Progress value={((sections?.length ?? 0) / 6) * 100} />
+                    <p className='text-sm text-muted-foreground'>Summarizing section {sectionCount + 1} of 6</p>
+                    <Progress value={(sectionCount / 6) * 100} />
                 </section>
             )}
         </main>
