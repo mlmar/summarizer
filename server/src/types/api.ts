@@ -1,8 +1,1 @@
-export interface SectionSummary {
-    title: string;
-    summary: string;
-}
-
-export interface SummarizeResponse {
-    sections: SectionSummary[];
-}
+export type { SectionSummary, SummarizeResponse } from '../../../common/types.ts';

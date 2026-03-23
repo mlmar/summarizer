@@ -44,3 +44,26 @@ export async function post<T>(url: string, body: unknown, headers?: Record<strin
 
     return response.json() as Promise<T>;
 }
+
+/**
+ * Makes a POST request to the given URL with a FormData body and returns the parsed JSON response.
+ *
+ * @param url - The URL to post to.
+ * @param formData - The FormData payload (e.g. for file uploads).
+ * @param headers - Optional additional HTTP headers.
+ * @returns The parsed JSON response body typed as T.
+ * @throws If the response status is not OK.
+ */
+export async function postForm<T>(url: string, formData: FormData, headers?: Record<string, string>): Promise<T> {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: formData
+    });
+
+    if (!response.ok) {
+        throw new Error(`POST ${url} failed with status ${response.status}`);
+    }
+
+    return response.json() as Promise<T>;
+}
