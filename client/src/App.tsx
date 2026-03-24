@@ -40,7 +40,7 @@ function App() {
             )}
 
             {sections && sections.length > 0 && (
-                <section className='flex flex-col gap-6 w-full max-w-xl pb-2'>
+                <section className='flex flex-col gap-6 w-full max-w-xl pb-8'>
                     {sections.map((s) => (
                         <SectionSummary key={s.title} title={s.title} summary={s.summary} />
                     ))}
