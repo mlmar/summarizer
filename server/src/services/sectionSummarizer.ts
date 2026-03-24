@@ -2,9 +2,8 @@ import { callWithTools } from './githubModels.ts';
 import type { ChatMessage, ToolDefinition, ToolCall } from '../types/github.ts';
 import type { SummarizeResponse } from '../types/api.ts';
 
-const STAGE1_CHUNK_SIZE = 24_000;
-const STAGE2_CONTENT_CAP = 20_000;
-
+const CHUNK_SIZE = 24000;
+const CONTENT_SIZE = 24000;
 const CORE_SECTIONS = new Set([
     'abstract',
     'introduction',
@@ -58,14 +57,18 @@ const summarizeSectionTool: ToolDefinition = {
             properties: {
                 title: {
                     type: 'string',
-                    description: 'The section heading (e.g. "Abstract", "Methods")'
+                    description: 'The section heading (e.g. "Abstract", "Methods"). Omit if the section has no clear heading of its own.'
+                },
+                previous_title: {
+                    type: 'string',
+                    description: 'The heading of the immediately preceding section. Provide this when the current section has no heading, so its content can be grouped with that section.'
                 },
                 content: {
                     type: 'string',
                     description: 'The full text of the section'
                 }
             },
-            required: ['title', 'content']
+            required: ['content']
         }
     }
 };
@@ -96,6 +99,30 @@ async function summarizeSection(title: string, content: string): Promise<string>
 }
 
 /**
+ * Summarizes a section whose content may exceed CONTENT_SIZE by splitting it
+ * into chunks, summarizing each independently, then consolidating the partial
+ * summaries into a single final summary.
+ *
+ * @param title - The section heading.
+ * @param content - The full (potentially long) text of the section.
+ * @returns The consolidated summary string.
+ */
+async function summarizeLongSection(title: string, content: string): Promise<{ summary: string; apiCalls: number }> {
+    const chunks = chunkText(content, CONTENT_SIZE);
+    if (chunks.length === 1) {
+        const summary = await summarizeSection(title, chunks[0]);
+        return { summary, apiCalls: 1 };
+    }
+
+    const partials: string[] = [];
+    for (const chunk of chunks) {
+        partials.push(await summarizeSection(title, chunk));
+    }
+    const summary = await summarizeSection(title, partials.join('\n\n'));
+    return { summary, apiCalls: chunks.length + 1 };
+}
+
+/**
  * Summarizes an entire scientific article section by section, yielding each
  * result as soon as it is ready.
  *
@@ -109,7 +136,8 @@ async function summarizeSection(title: string, content: string): Promise<string>
  * @yields Each section title and its summary as soon as it is available.
  */
 export async function* streamArticleSections(text: string): AsyncGenerator<SummarizeResponse['sections'][number]> {
-    const chunks = chunkText(text, STAGE1_CHUNK_SIZE);
+    const chunks = chunkText(text, CHUNK_SIZE);
+    let apiCalls = 0;
 
     const systemMessage: ChatMessage = {
         role: 'system',
@@ -120,30 +148,36 @@ export async function* streamArticleSections(text: string): AsyncGenerator<Summa
     // Stage 1 - run section detection on each chunk sequentially
     const allToolCalls: ToolCall[] = [];
     for (const chunk of chunks) {
+        apiCalls++;
         const response = await callWithTools([systemMessage, { role: 'user', content: chunk }], [summarizeSectionTool]);
-        allToolCalls.push(...(response.choices[0]?.message.tool_calls ?? []));
+        const calls = response.choices[0]?.message.tool_calls ?? []
+        allToolCalls.push(...calls);
     }
 
     const mergedSections = new Map<string, { title: string; content: string }>();
     for (const call of allToolCalls) {
-        const args = JSON.parse(call.function.arguments) as { title: string; content: string };
-        const key = args.title.toLowerCase();
-        if (!CORE_SECTIONS.has(key)) { // Skip non essential sections
+        const args = JSON.parse(call.function.arguments) as { title?: string; previous_title?: string; content: string };
+        const { content } = args;
+        const effectiveTitle = args.title?.trim() || args.previous_title?.trim() || '';
+        const key = effectiveTitle.toLowerCase();
+        if (!key || !CORE_SECTIONS.has(key)) { // Skip non essential sections
             continue;
         }
 
         const existing = mergedSections.get(key); // Merge existing sections together
         if (existing) {
-            existing.content += '\n\n' + args.content;
+            existing.content += '\n\n' + content;
         } else {
-            mergedSections.set(key, { title: args.title, content: args.content });
+            mergedSections.set(key, { title: effectiveTitle, content });
         }
     }
 
     // Stage 2 - summarize each merged section sequentially, yielding as each completes
     for (const { title, content } of mergedSections.values()) {
-        const capped = content.slice(0, STAGE2_CONTENT_CAP);
-        const summary = await summarizeSection(title, capped);
+        const { summary, apiCalls: sectionCalls } = await summarizeLongSection(title, content);
+        apiCalls += sectionCalls;
         yield { title, summary };
     }
+
+    console.log(`Total GitHub API calls: ${apiCalls}`);
 }

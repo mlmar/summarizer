@@ -34,7 +34,7 @@ export function SectionSummary({ title, summary }: SectionSummaryProps) {
                     {copied ? <Check className='text-green-500 animate-in fade-in duration-500' /> : <Clipboard />}
                 </Button>
             </span>
-            <ul className='list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2'>
+            <ul className='list-disc list-inside text-sm text-muted-foreground space-y-1 pl-1'>
                 {summary
                     .split('\n')
                     .filter(Boolean)

@@ -6,13 +6,15 @@ import { useSummarize } from './hooks/useSummarize';
 import { SectionSummary } from './components/SectionSummary';
 import { Spinner } from '@/components/ui/spinner';
 
+const TOTAL_SECTIONS = 6;
+
 function App() {
     const [file, setFile] = useState<File | null>(null);
     const { data: sections, isFetching, error } = useSummarize(file);
     const sectionCount = sections?.length ?? 0;
 
     return (
-        <main className='flex flex-col items-center w-full min-h-screen p-4 gap-6'>
+        <main className='flex flex-col items-center w-full h-full p-4 gap-6'>
             <section className='flex flex-col w-full max-w-xl gap-4'>
                 <h1 className='text-2xl font-bold '>Scientific Article Summarizer</h1>
                 <p className='text-sm text-muted-foreground'>
@@ -31,14 +33,14 @@ function App() {
             {isFetching && (
                 <section className='flex flex-col gap-2 w-full max-w-xl'>
                     <h2 className='flex items-center text-sm text-muted-foreground gap-2'>
-                        Summarizing section {sectionCount + 1} of 6 <Spinner />
+                        Summarizing section {sectionCount + 1} of {TOTAL_SECTIONS} <Spinner />
                     </h2>
-                    <Progress value={(sectionCount / 6) * 100} />
+                    <Progress value={(sectionCount / TOTAL_SECTIONS) * 100} />
                 </section>
             )}
 
             {sections && sections.length > 0 && (
-                <section className='flex flex-col gap-6 w-full max-w-xl'>
+                <section className='flex flex-col gap-6 w-full max-w-xl pb-2'>
                     {sections.map((s) => (
                         <SectionSummary key={s.title} title={s.title} summary={s.summary} />
                     ))}
